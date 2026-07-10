@@ -1,9 +1,8 @@
 # JavaMail
--keep com.sun.mail.** { *; }
--keep javax.mail.** { *; }
--keep javax.activation.** { *; }
--keep org.apache.harmony.** { *; }
--keep com.sun.mail.**.Pop3Folder { *; }
+-keep class com.sun.mail.** { *; }
+-keep class javax.mail.** { *; }
+-keep class javax.activation.** { *; }
+-keep class org.apache.harmony.** { *; }
 -dontwarn javax.mail.**
 -dontwarn com.sun.mail.**
 -dontwarn javax.activation.**
