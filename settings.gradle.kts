@@ -1,20 +1,20 @@
 pluginManagement {
     repositories {
-        maven { url = uri("https://maven.aliyun.com/repository/google") }
+        // KSP 插件在 Maven Central，必须在 google() 之前
         maven { url = uri("https://maven.aliyun.com/repository/public") }
-        google()
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
         mavenCentral()
+        google()
         gradlePluginPortal()
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url = uri("https://maven.aliyun.com/repository/google") }
         maven { url = uri("https://maven.aliyun.com/repository/public") }
-        google()
+        maven { url = uri("https://maven.aliyun.com/repository/google") }
         mavenCentral()
-        // JavaMail (com.sun.mail:android-mail) 在 maven 中央仓库可用
+        google()
     }
 }
 
