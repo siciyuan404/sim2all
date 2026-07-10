@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Base application theme. 实际 UI 由 Jetpack Compose + Material3 接管，
+      这里仅提供一个无 ActionBar 的基础主题（Compose 用 setContent 直接渲染）。
+    -->
+    <style name="Theme.Sim2all" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+</resources>

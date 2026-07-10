@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- DataStore 文件位于 files/datastore 下；Room 数据库位于 databases 下 -->
+    <include domain="file" path="datastore/"/>
+    <include domain="database" path="."/>
+</full-backup-content>
