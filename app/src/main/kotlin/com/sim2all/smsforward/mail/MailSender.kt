@@ -86,9 +86,9 @@ class MailSender(private val cfg: Settings.Snapshot) {
         val msg = MimeMessage(session).apply {
             setFrom(InternetAddress(cfg.fromAddress.ifEmpty { cfg.smtpUser }))
             setRecipients(Message.RecipientType.TO, recipients.joinToString(","))
-            subject = subject
+            setSubject(subject, "UTF-8")
             setText(text, "UTF-8")
-            sentDate = Date()
+            setSentDate(Date())
         }
         Transport.send(msg)
     }
