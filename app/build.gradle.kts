@@ -51,6 +51,15 @@ android {
             excludes += "/META-INF/mailcap"
             excludes += "/META-INF/mimetypes.default"
             excludes += "/META-INF/mail.default"
+            // JavaMail 与 android-activation 重复的元数据文件
+            excludes += "/META-INF/NOTICE.md"
+            excludes += "/META-INF/NOTICE"
+            excludes += "/META-INF/NOTICE.txt"
+            excludes += "/META-INF/LICENSE.md"
+            excludes += "/META-INF/LICENSE"
+            excludes += "/META-INF/LICENSE.txt"
+            excludes += "/META-INF/DEPENDENCIES"
+            excludes += "/META-INF/*.version"
         }
     }
 }
