@@ -29,6 +29,12 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
+      - name: Write CI init script
+        # CI 里强制只使用官方仓库，避免阿里云镜像 502 导致整个仓库被禁用
+        run: |
+          mkdir -p ~/.gradle/init.d
+          cp .github/ci-repos.init.gradle.kts ~/.gradle/init.d/
+
       - name: Build debug & release APK
         # runner 已预装 gradle，直接调用（无需 wrapper jar）
         run: gradle assembleDebug assembleRelease --no-daemon --stacktrace
