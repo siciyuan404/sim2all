@@ -15,10 +15,3 @@ beforeSettings {
         }
     }
 }
-
-allprojects {
-    repositories {
-        mavenCentral()
-        google()
-    }
-}
