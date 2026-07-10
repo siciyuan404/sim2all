@@ -5,12 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.sim2all.smsforward.App
 import com.sim2all.smsforward.data.PendingSms
 import com.sim2all.smsforward.data.Settings
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * 配置与日志共用 ViewModel。
@@ -52,12 +54,15 @@ class AppViewModel : ViewModel() {
                     _testState.value = TestState.Failed("收件邮箱为空")
                     return@launch
                 }
+                // SMTP 是阻塞网络操作，必须切到 IO 线程，否则 NetworkOnMainThreadException
                 val sender = com.sim2all.smsforward.mail.MailSender(cfg)
-                sender.send(
-                    sender = "测试",
-                    body = "这是一封来自 sim2all 的测试邮件，配置生效。",
-                    receivedAt = java.util.Date()
-                )
+                withContext(Dispatchers.IO) {
+                    sender.send(
+                        sender = "测试",
+                        body = "这是一封来自 sim2all 的测试邮件，配置生效。",
+                        receivedAt = java.util.Date()
+                    )
+                }
                 _testState.value = TestState.Success
             } catch (t: Throwable) {
                 _testState.value = TestState.Failed(t.message ?: t.javaClass.simpleName)
