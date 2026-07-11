@@ -35,14 +35,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sim2all.smsforward.data.Settings
 
 @Composable
 fun ConfigScreen(
@@ -96,24 +98,24 @@ fun ConfigScreen(
 
         // ===== SMTP 服务器 =====
         SectionCard(title = "SMTP 服务器", icon = Icons.Outlined.MarkEmailRead) {
-            OutlinedTextField(
-                value = snap.smtpHost,
-                onValueChange = { v -> vm.update { it.copy(smtpHost = v.trim()) } },
-                label = { Text("SMTP 主机") },
-                placeholder = { Text("smtp.qq.com") },
+            ConfigTextField(
+                externalValue = snap.smtpHost,
+                onValueChange = { v -> vm.update { it.copy(smtpHost = v) } },
+                label = "SMTP 主机",
+                placeholder = "smtp.qq.com",
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = snap.smtpPort.toString(),
+                ConfigTextField(
+                    externalValue = snap.smtpPort.toString(),
                     onValueChange = { v ->
                         val p = v.filter { it.isDigit() }.toIntOrNull() ?: 0
                         vm.update { it.copy(smtpPort = p) }
                     },
-                    label = { Text("端口") },
+                    label = "端口",
                     singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    keyboardType = KeyboardType.Number,
                     modifier = Modifier.weight(1f)
                 )
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -135,58 +137,58 @@ fun ConfigScreen(
                     }
                 }
             }
-            OutlinedTextField(
-                value = snap.smtpUser,
-                onValueChange = { v -> vm.update { it.copy(smtpUser = v.trim()) } },
-                label = { Text("登录账号") },
-                placeholder = { Text("user@qq.com") },
-                leadingIcon = { Icon(Icons.Outlined.AlternateEmail, null) },
+            ConfigTextField(
+                externalValue = snap.smtpUser,
+                onValueChange = { v -> vm.update { it.copy(smtpUser = v) } },
+                label = "登录账号",
+                placeholder = "user@qq.com",
+                leadingIcon = Icons.Outlined.AlternateEmail,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = snap.smtpPass,
+            ConfigTextField(
+                externalValue = snap.smtpPass,
                 onValueChange = { v -> vm.update { it.copy(smtpPass = v) } },
-                label = { Text("授权码 / 密码") },
-                placeholder = { Text("QQ邮箱请使用授权码而非登录密码") },
-                leadingIcon = { Icon(Icons.Outlined.Password, null) },
+                label = "授权码 / 密码",
+                placeholder = "QQ邮箱请使用授权码而非登录密码",
+                leadingIcon = Icons.Outlined.Password,
                 singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                isPassword = true,
+                keyboardType = KeyboardType.Password,
                 modifier = Modifier.fillMaxWidth()
             )
         }
 
         // ===== 收发邮箱 =====
         SectionCard(title = "收发邮箱", icon = Icons.Outlined.Send) {
-            OutlinedTextField(
-                value = snap.fromAddress,
-                onValueChange = { v -> vm.update { it.copy(fromAddress = v.trim()) } },
-                label = { Text("发件邮箱（留空则用登录账号）") },
+            ConfigTextField(
+                externalValue = snap.fromAddress,
+                onValueChange = { v -> vm.update { it.copy(fromAddress = v) } },
+                label = "发件邮箱（留空则用登录账号）",
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = snap.toAddress,
+            ConfigTextField(
+                externalValue = snap.toAddress,
                 onValueChange = { v -> vm.update { it.copy(toAddress = v) } },
-                label = { Text("收件邮箱（多个用英文逗号分隔）") },
-                leadingIcon = { Icon(Icons.Outlined.MarkEmailRead, null) },
+                label = "收件邮箱（多个用英文逗号分隔）",
+                leadingIcon = Icons.Outlined.MarkEmailRead,
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 64.dp)
             )
-            OutlinedTextField(
-                value = snap.subjectPrefix,
+            ConfigTextField(
+                externalValue = snap.subjectPrefix,
                 onValueChange = { v -> vm.update { it.copy(subjectPrefix = v) } },
-                label = { Text("邮件主题前缀") },
-                leadingIcon = { Icon(Icons.Outlined.Tag, null) },
+                label = "邮件主题前缀",
+                leadingIcon = Icons.Outlined.Tag,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = snap.signature,
+            ConfigTextField(
+                externalValue = snap.signature,
                 onValueChange = { v -> vm.update { it.copy(signature = v) } },
-                label = { Text("邮件签名（可空）") },
+                label = "邮件签名（可空）",
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 64.dp)
@@ -200,18 +202,18 @@ fun ConfigScreen(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            OutlinedTextField(
-                value = snap.senderFilter,
+            ConfigTextField(
+                externalValue = snap.senderFilter,
                 onValueChange = { v -> vm.update { it.copy(senderFilter = v) } },
-                label = { Text("发送方号码过滤（逗号分隔）") },
-                leadingIcon = { Icon(Icons.Outlined.Key, null) },
+                label = "发送方号码过滤（逗号分隔）",
+                leadingIcon = Icons.Outlined.Key,
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
-            OutlinedTextField(
-                value = snap.keywordFilter,
+            ConfigTextField(
+                externalValue = snap.keywordFilter,
                 onValueChange = { v -> vm.update { it.copy(keywordFilter = v) } },
-                label = { Text("正文关键字过滤（逗号分隔）") },
+                label = "正文关键字过滤（逗号分隔）",
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(min = 64.dp)
@@ -262,6 +264,52 @@ fun ConfigScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
+}
+
+/**
+ * 配置页专用文本框。
+ *
+ * 用本地 state 缓冲输入：TextField 由 [text] 本地状态直接驱动，
+ * 用户输入时同步更新本地状态并异步写入 DataStore。
+ * 这样可避免「value 绑定异步 Flow → 输入回流后光标被重置到开头」的问题。
+ *
+ * 注意：[rememberSaveable] 仅在首次进入组合时用 [externalValue] 初始化；
+ * 之后由本地 state 主导显示。配置页只在 snap 加载完成后才渲染，因此首次初始化值正确。
+ */
+@Composable
+private fun ConfigTextField(
+    externalValue: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String? = null,
+    placeholder: String? = null,
+    leadingIcon: androidx.compose.ui.graphics.vector.ImageVector? = null,
+    singleLine: Boolean = false,
+    isPassword: Boolean = false,
+    keyboardType: KeyboardType = KeyboardType.Text
+) {
+    var text by rememberSaveable { mutableStateOf(externalValue) }
+
+    val labelComposable: (@Composable () -> Unit)? = label?.let { { Text(it) } }
+    val placeholderComposable: (@Composable () -> Unit)? = placeholder?.let { { Text(it) } }
+    val leadingIconComposable: (@Composable () -> Unit)? = leadingIcon?.let {
+        { Icon(it, contentDescription = null) }
+    }
+
+    OutlinedTextField(
+        value = text,
+        onValueChange = {
+            text = it
+            onValueChange(it)
+        },
+        modifier = modifier,
+        label = labelComposable,
+        placeholder = placeholderComposable,
+        leadingIcon = leadingIconComposable,
+        singleLine = singleLine,
+        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
+    )
 }
 
 @Composable
